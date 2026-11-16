@@ -1,0 +1,88 @@
+:root {
+  color-scheme: light dark;
+  --fundo: #f6f7fb;
+  --superficie: #ffffff;
+  --superficie-2: #eef0f6;
+  --borda: #dde1ea;
+  --texto: #18202f;
+  --texto-2: #4a5568;
+  --texto-suave: #5f6879;
+  --primaria: #5b3df5;
+  --primaria-suave: #ece8ff;
+  --primaria-texto: #ffffff;
+  --verde: #127a52;
+  --verde-fundo: #e3f5ec;
+  --amarelo: #8a5a00;
+  --amarelo-fundo: #fdf0d5;
+  --vermelho: #c22f2f;
+  --vermelho-fundo: #fbe7e7;
+  --grafico-verde: #1f9d6b;
+  --grafico-amarelo: #e9a800;
+  --grafico-vermelho: #e04848;
+  --sombra: 0 1px 2px rgb(16 24 40 / 6%), 0 2px 8px rgb(16 24 40 / 6%);
+  --raio: 14px;
+  --raio-p: 9px;
+  --toque: 44px;
+  --largura: 560px;
+  --altura-abas: 64px;
+  --fonte: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --fonte-num: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #101218;
+    --superficie: #1a1d26;
+    --superficie-2: #242835;
+    --borda: #323748;
+    --texto: #e8eaf0;
+    --texto-2: #b9bfcc;
+    --texto-suave: #9aa2b2;
+    --primaria: #9a8bff;
+    --primaria-suave: #2a2552;
+    --primaria-texto: #120d33;
+    --verde: #4fd39a;
+    --verde-fundo: #173327;
+    --amarelo: #f3c04f;
+    --amarelo-fundo: #3a301a;
+    --vermelho: #ff8080;
+    --vermelho-fundo: #3d1d22;
+    --sombra: 0 1px 2px rgb(0 0 0 / 30%);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: var(--fonte);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.sem-rolagem { overflow: hidden; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+:focus-visible { outline: 3px solid var(--primaria); outline-offset: 2px; }
+
+h1 { font-size: 1.3rem; margin: 0; }
+h2 { font-size: 1.02rem; margin: 0; }
+p { margin: 0 0 8px; }
+
+.num { font-family: var(--fonte-num); font-variant-numeric: tabular-nums; }
+
+
+/* ---------- estrutura ---------- */
+.app {
+  max-width: var(--largura);
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: calc(12px + env(safe-area-inset-top)) 16px calc(var(--altura-abas) + 88px + env(safe-area-inset-bottom));
+}
