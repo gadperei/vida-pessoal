@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AtivarNotificacoes } from '../componentes/AtivarNotificacoes.tsx';
 import { Contador } from '../componentes/Contador.tsx';
 import { EditorCiclo } from '../componentes/EditorCiclo.tsx';
 import { configuracaoInicial } from '../dados/opsConfig.ts';
@@ -8,8 +9,8 @@ import { useHoje } from '../estado/useHoje.ts';
 import { adicionarDias, diaDaSemana, duracao } from '../regras/datas.ts';
 import { NOME_APP } from '../regras/tipos.ts';
 
-type Passo = 'escala' | 'faculdade' | 'treino' | 'habitos' | 'horario';
-const PASSOS: Passo[] = ['escala', 'faculdade', 'treino', 'habitos', 'horario'];
+type Passo = 'escala' | 'faculdade' | 'treino' | 'habitos' | 'horario' | 'notificacoes';
+const PASSOS: Passo[] = ['escala', 'faculdade', 'treino', 'habitos', 'horario', 'notificacoes'];
 const DIAS_UTEIS = [
   { n: 1, r: 'Seg' }, { n: 2, r: 'Ter' }, { n: 3, r: 'Qua' }, { n: 4, r: 'Qui' }, { n: 5, r: 'Sex' },
 ];
@@ -30,6 +31,7 @@ export function ConfiguracaoInicial() {
   const [treinos, setTreinos] = useState(3);
   const [livros, setLivros] = useState(1);
   const [horario, setHorario] = useState('08:00');
+  const [pushAtivo, setPushAtivo] = useState(false);
 
   const i = PASSOS.indexOf(passo);
   const proximoSabado = adicionarDias(hoje, (6 - diaDaSemana(hoje) + 7) % 7);
@@ -132,6 +134,14 @@ export function ConfiguracaoInicial() {
           </section>
         )}
 
+        {passo === 'notificacoes' && (
+          <section className="card">
+            <h1>Avisos no celular</h1>
+            <p className="campo-dica">Para nenhuma prova ou entrega te pegar de surpresa: o app avisa às {horario}, e uma hora antes dos compromissos com horário.</p>
+            <AtivarNotificacoes aoAtivar={() => setPushAtivo(true)} />
+          </section>
+        )}
+
         <div className="botoes">
           {i > 0 && <button type="button" className="botao botao-secundario" onClick={() => setPasso(PASSOS[i - 1])}>Voltar</button>}
           {i < PASSOS.length - 1 ? (
@@ -140,7 +150,7 @@ export function ConfiguracaoInicial() {
             </button>
           ) : (
             <button type="button" className="botao botao-primario" disabled={!status.online} onClick={concluir}>
-              {status.online ? 'Concluir' : 'Conecte-se para concluir'}
+              {!status.online ? 'Conecte-se para concluir' : pushAtivo ? 'Concluir' : 'Agora não'}
             </button>
           )}
         </div>

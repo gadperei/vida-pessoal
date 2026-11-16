@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { plataformaInstalacao } from './plataforma.ts';
+import { estaInstalado, plataformaInstalacao } from './plataforma.ts';
 
 // Evento do Chrome/Android que permite mostrar o "Instalar app" na hora certa (não está nos tipos padrão).
 interface EventoInstalacao extends Event {
@@ -8,11 +8,6 @@ interface EventoInstalacao extends Event {
 }
 
 const CHAVE_DISPENSADO = 'vida-pessoal:aviso-instalacao-dispensado';
-
-function estaInstalado(): boolean {
-  const iosStandalone = (navigator as Navigator & { standalone?: boolean }).standalone === true;
-  return iosStandalone || window.matchMedia('(display-mode: standalone)').matches;
-}
 
 function lerDispensado(): boolean {
   try { return localStorage.getItem(CHAVE_DISPENSADO) === '1'; } catch { return false; }

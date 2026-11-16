@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { AtivarNotificacoes } from './componentes/AtivarNotificacoes.tsx';
 import { BarraAbas, type Aba } from './componentes/BarraAbas.tsx';
 import { EditarItem } from './componentes/EditarItem.tsx';
 import { IndicadorSync } from './componentes/IndicadorSync.tsx';
@@ -11,6 +12,9 @@ import { ConfiguracaoInicial } from './telas/ConfiguracaoInicial.tsx';
 import { Entrar } from './telas/Entrar.tsx';
 import { Inicio } from './telas/Inicio.tsx';
 import { AvisoAtualizacao } from './pwa/AvisoAtualizacao.tsx';
+import { ativarPush, situacaoPush } from './pwa/push.ts';
+import { lerPedidoDaUrl } from './estado/pedidoUrl.ts';
+import { cliente } from './supabase.ts';
 import type { Ocorrencia } from './regras/agenda.ts';
 
 export default function App() {
@@ -35,11 +39,23 @@ function Conteudo() {
 }
 
 function Principal() {
-  const { banco, pronto, aviso, limparAviso } = useBanco();
-  const [aba, setAba] = useState<Aba>('inicio');
+  const { banco, pronto, aviso, limparAviso, status } = useBanco();
+  // A notificação abre "/?aba=metas" ou "/?abrir=checkin" (o check-in entra na Task 18).
+  const [pedido] = useState(() => lerPedidoDaUrl(window.location.search));
+  const [aba, setAba] = useState<Aba>(pedido.aba ?? 'inicio');
   const hoje = useHoje();
   const [anotando, setAnotando] = useState(false);
   const [itemAberto, setItemAberto] = useState<Ocorrencia | null>(null);
+
+  useEffect(() => {
+    if (window.location.search) window.history.replaceState(null, '', window.location.pathname);
+  }, []);
+
+  // Com a permissão já dada, confere e regrava a inscrição de push (o navegador pode trocá-la).
+  useEffect(() => {
+    if (!status.online || situacaoPush() !== 'ativo') return;
+    ativarPush(cliente).catch(() => { /* tenta de novo na próxima vez */ });
+  }, [status.online]);
 
   if (!pronto) return <div className="tela-neutra">Carregando…</div>;
   if (banco.config.length === 0) {
@@ -54,7 +70,16 @@ function Principal() {
     <main className="app">
       <IndicadorSync />
       {aba === 'inicio' && <Inicio hoje={hoje} aoAbrirItem={setItemAberto} />}
-      {aba !== 'inicio' && (
+      {aba === 'ajustes' && (
+        <div className="conteudo">
+          {/* Os Ajustes completos entram na Task 22; as notificações já ficam aqui. */}
+          <section className="card">
+            <h2>Notificações</h2>
+            <AtivarNotificacoes />
+          </section>
+        </div>
+      )}
+      {(aba === 'resumo' || aba === 'metas') && (
         <div className="conteudo">
           <p className="espaco-reservado">Aba: {aba}</p>
         </div>

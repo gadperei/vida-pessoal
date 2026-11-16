@@ -10,3 +10,9 @@ export function plataformaInstalacao(userAgent: string, standalone: boolean): Pl
   if (/iPhone|iPad|iPod/i.test(userAgent)) return 'ios';
   return 'outro';
 }
+
+/** Aberto pelo ícone (app instalado)? Só funciona no navegador. */
+export function estaInstalado(): boolean {
+  const iosStandalone = (navigator as Navigator & { standalone?: boolean }).standalone === true;
+  return iosStandalone || window.matchMedia('(display-mode: standalone)').matches;
+}
