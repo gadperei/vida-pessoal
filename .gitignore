@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.env*
+.superpowers/
+supabase/.temp/
+supabase/functions/_shared/regras/
