@@ -420,3 +420,26 @@ form .chips { margin-bottom: 0; }
 .contador { display: flex; align-items: center; gap: 12px; }
 .contador .botao { width: var(--toque); padding: 0; font-size: 1.3rem; }
 .contador-valor { min-width: 64px; text-align: center; font-size: 1.15rem; font-weight: 700; }
+/* linha do tempo */
+.linha-do-tempo { display: flex; flex-direction: column; gap: 10px; }
+.dia { background: var(--superficie); border-radius: var(--raio); border-left: 4px solid var(--borda); padding: 10px 12px; box-shadow: var(--sombra); }
+.dia-hoje { border-left-color: var(--primaria); }
+.dia-cabecalho { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dia-cabecalho h2 { font-size: 0.98rem; margin-right: auto; }
+.etiqueta { border: 0; border-radius: 6px; padding: 4px 8px; min-height: 32px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em; cursor: pointer; }
+.etiqueta-t { background: var(--primaria-suave); color: var(--primaria); }
+.etiqueta-f { background: var(--verde-fundo); color: var(--verde); }
+.aula { font-size: 0.75rem; color: var(--texto-2); border: 1px solid var(--borda); border-radius: 6px; padding: 2px 6px; }
+.dia-vazio { color: var(--texto-suave); font-size: 0.88rem; margin: 6px 0 0; }
+.ocorrencias { list-style: none; margin: 6px 0 0; padding: 0; }
+.ocorrencia { display: flex; align-items: center; gap: 8px; min-height: var(--toque); }
+.ocorrencia input { width: 22px; height: 22px; accent-color: var(--primaria); flex-shrink: 0; }
+.ocorrencia-titulo, .link-item { background: none; border: 0; padding: 0; text-align: left; cursor: pointer; font: inherit; color: inherit; }
+.ocorrencia-titulo { flex: 1; min-height: var(--toque); }
+.ocorrencia-aviso .ocorrencia-titulo, .texto-aviso { color: var(--amarelo); font-weight: 700; }
+.ocorrencia-feita { text-decoration: line-through; opacity: 0.6; }
+.ocorrencias-resumo { margin: 6px 0 0; color: var(--texto-2); font-size: 0.92rem; }
+.link-item { min-height: 32px; }
+.botao-pendentes { margin-top: 8px; width: 100%; min-height: var(--toque); border-radius: var(--raio-p); border: 1px dashed var(--amarelo); background: var(--amarelo-fundo); color: var(--amarelo); font-weight: 700; cursor: pointer; }
+.lista-pendentes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.chip-perigo { color: var(--vermelho); border-color: var(--vermelho); }
