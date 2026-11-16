@@ -4,6 +4,7 @@ import { IndicadorSync } from './componentes/IndicadorSync.tsx';
 import { Toast } from './componentes/Toast.tsx';
 import { BancoProvider, useBanco } from './estado/contexto.tsx';
 import { useSessao } from './estado/useSessao.ts';
+import { ConfiguracaoInicial } from './telas/ConfiguracaoInicial.tsx';
 import { Entrar } from './telas/Entrar.tsx';
 
 export default function App() {
@@ -24,10 +25,10 @@ function Principal() {
   if (!pronto) return <div className="tela-neutra">Carregando…</div>;
   if (banco.config.length === 0) {
     return (
-      <main className="app">
+      <>
         <IndicadorSync />
-        <p className="espaco-reservado">Configuração inicial (Task 13)</p>
-      </main>
+        <ConfiguracaoInicial />
+      </>
     );
   }
   return (

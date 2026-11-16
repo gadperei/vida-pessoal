@@ -409,3 +409,14 @@ form .chips { margin-bottom: 0; }
   border-radius: 999px; padding: 4px 12px; font-size: 0.8rem; font-weight: 600; white-space: nowrap;
 }
 .espaco-reservado { border: 1px dashed var(--borda); border-radius: var(--raio); padding: 16px; color: var(--texto-suave); text-align: center; }
+.rotulo { font-size: 0.85rem; color: var(--texto-2); font-weight: 600; margin: 12px 0 6px; }
+.linha-opcao { display: flex; align-items: center; gap: 10px; min-height: var(--toque); }
+.linha-opcao input { width: 22px; height: 22px; accent-color: var(--primaria); }
+.ciclo { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 6px; margin-bottom: 8px; }
+.casa { min-height: var(--toque); border-radius: var(--raio-p); border: 2px solid transparent; font-weight: 700; cursor: pointer; }
+.casa-t { background: var(--primaria-suave); color: var(--primaria); }
+.casa-f { background: var(--verde-fundo); color: var(--verde); }
+.casa-hoje { border-color: var(--texto); box-shadow: 0 0 0 2px var(--fundo) inset; }
+.contador { display: flex; align-items: center; gap: 12px; }
+.contador .botao { width: var(--toque); padding: 0; font-size: 1.3rem; }
+.contador-valor { min-width: 64px; text-align: center; font-size: 1.15rem; font-weight: 700; }

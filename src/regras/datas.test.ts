@@ -34,3 +34,11 @@ describe('datas', () => {
     expect(agoraEmSaoPaulo(new Date('2026-11-16T11:00:00Z'))).toEqual({ dia: '2026-11-16', minutos: 480 });
   });
 });
+
+it('duração em horas', async () => {
+  const { duracao } = await import('./datas.ts');
+  expect(duracao(420)).toBe('7h');
+  expect(duracao(390)).toBe('6h30');
+  expect(duracao(365)).toBe('6h05');
+  expect(duracao(45)).toBe('0h45');
+});

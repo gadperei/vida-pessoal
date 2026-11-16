@@ -89,3 +89,10 @@ export function agoraEmSaoPaulo(agora: Date): { dia: Dia; minutos: number } {
   const p = Object.fromEntries(FORMATO_SP.formatToParts(agora).map((x) => [x.type, x.value]));
   return { dia: `${p.year}-${p.month}-${p.day}`, minutos: Number(p.hour) * 60 + Number(p.minute) };
 }
+
+/** 420 → '7h', 390 → '6h30'. */
+export function duracao(minutos: number): string {
+  const h = Math.floor(minutos / 60);
+  const m = minutos % 60;
+  return m === 0 ? `${h}h` : `${h}h${dois(m)}`;
+}
