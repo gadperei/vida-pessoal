@@ -24,3 +24,25 @@ it('mover e excluir atualizam o carimbo', () => {
   expect(moverItem(item({ id: 'a' }), '2026-11-20', later)).toMatchObject({ tabela: 'itens', linha: { id: 'a', data: '2026-11-20', atualizado_em: later } });
   expect(excluirLinha('itens', item({ id: 'a' }), later).linha).toMatchObject({ excluido_em: later, atualizado_em: later });
 });
+
+it('criarItem a partir da prévia', async () => {
+  const { criarItem } = await import('./opsAgenda.ts');
+  const { lerLinha } = await import('../regras/anotar.ts');
+  const m = criarItem(lerLinha('prova química 20/11', HOJE), 'folgas', () => 'i1', AGORA);
+  expect(m.linha).toMatchObject({ id: 'i1', tipo: 'prova', titulo: 'Prova química', data: '2026-11-20', repeticao: 'nenhuma', feito_em: null, repete_ate: null, excluido_em: null, atualizado_em: AGORA });
+  expect(criarItem(lerLinha('treino', HOJE), 'folgas', () => 'i2', AGORA).linha).toMatchObject({ repeticao: 'folgas' });
+});
+it('editarItem muda só os campos pedidos', async () => {
+  const { editarItem } = await import('./opsAgenda.ts');
+  const m = editarItem(item({ id: 'a', titulo: 'X' }), { titulo: 'Y', hora: '10:00' }, '2026-11-16T13:00:00.000Z');
+  expect(m.linha).toMatchObject({ id: 'a', titulo: 'Y', hora: '10:00', data: HOJE, atualizado_em: '2026-11-16T13:00:00.000Z' });
+});
+it('mudar a repetição não reescreve o passado', async () => {
+  const { editarRepeticao } = await import('./opsAgenda.ts');
+  const t = item({ id: 't', data: '2026-11-13', repeticao: 'folgas' });
+  const ms = editarRepeticao(t, 'todo_dia', HOJE, () => 'n', AGORA);
+  expect(ms.map((m) => [(m.linha as Item).id, (m.linha as Item).repeticao, (m.linha as Item).repete_ate, (m.linha as Item).data])).toEqual([
+    ['t', 'folgas', '2026-11-15', '2026-11-13'], ['n', 'todo_dia', null, HOJE],
+  ]);
+  expect(editarRepeticao({ ...t, data: HOJE }, 'todo_dia', HOJE, () => 'n', AGORA)).toHaveLength(1);
+});
