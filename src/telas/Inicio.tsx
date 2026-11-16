@@ -4,6 +4,7 @@ import { PainelInferior } from '../componentes/PainelInferior.tsx';
 import { agoraIso } from '../dados/ids.ts';
 import { alternarFeito, excluirLinha, moverItem } from '../dados/opsAgenda.ts';
 import { useBanco } from '../estado/contexto.tsx';
+import { AvisoInstalacao } from '../pwa/AvisoInstalacao.tsx';
 import { pendentes, proximaFolga, type Ocorrencia } from '../regras/agenda.ts';
 import { adicionarDias, rotuloDia } from '../regras/datas.ts';
 import type { Dia, Item } from '../regras/tipos.ts';
@@ -47,6 +48,7 @@ export function Inicio({ hoje, aoAbrirItem }: Props) {
 
   return (
     <div className="conteudo">
+      <AvisoInstalacao />
       {/* Metas em destaque (Task 20) e registro do dia (Task 18) entram aqui. */}
       <LinhaDoTempo hoje={hoje} aoAbrirItem={aoAbrirItem} topoDeHoje={topoDeHoje} />
       <PainelInferior aberto={verPendentes && lista.length > 0} titulo="Pendentes" aoFechar={() => setVerPendentes(false)}>

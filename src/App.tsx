@@ -10,9 +10,20 @@ import { useSessao } from './estado/useSessao.ts';
 import { ConfiguracaoInicial } from './telas/ConfiguracaoInicial.tsx';
 import { Entrar } from './telas/Entrar.tsx';
 import { Inicio } from './telas/Inicio.tsx';
+import { AvisoAtualizacao } from './pwa/AvisoAtualizacao.tsx';
 import type { Ocorrencia } from './regras/agenda.ts';
 
 export default function App() {
+  // O AvisoAtualizacao registra o service worker: fica fora de tudo para valer até na tela de login.
+  return (
+    <>
+      <AvisoAtualizacao />
+      <Conteudo />
+    </>
+  );
+}
+
+function Conteudo() {
   const sessao = useSessao();
   if (sessao.estado === 'carregando') return <div className="tela-neutra">Carregando…</div>;
   if (sessao.estado === 'fora' || !sessao.userId) return <Entrar />;
