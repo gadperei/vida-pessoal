@@ -1,6 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { estaInstalado, plataformaInstalacao } from './plataforma.ts';
 
+// Chave PÚBLICA do push (a privada fica só nos segredos do Supabase). Pode ficar no código: todo navegador a recebe.
+export const CHAVE_VAPID_PUBLICA = 'BNyQ-UZ07r3HZyM2HiIBIryjQDxnYUeudHIJKhMDal1o4_7xtrMWy9cJ8w1DeJ6XJ8wc1wqyyiE90hC93Iowp1E';
+
 export type SituacaoPush = 'sem-suporte' | 'precisa-instalar' | 'negado' | 'pode-pedir' | 'ativo';
 
 /** Chave VAPID (base64url, sem "=") → bytes, como o pushManager.subscribe pede. */
@@ -55,7 +58,7 @@ export async function ativarPush(cliente: SupabaseClient): Promise<'ok' | 'negad
   if (permissao !== 'granted') return 'negado';
 
   const registro = await navigator.serviceWorker.ready;
-  const chave = base64UrlParaBytes(import.meta.env.VITE_VAPID_PUBLICA);
+  const chave = base64UrlParaBytes(CHAVE_VAPID_PUBLICA);
   let inscricao = await registro.pushManager.getSubscription();
   if (inscricao && !mesmaChave(inscricao.options.applicationServerKey, chave)) {
     await inscricao.unsubscribe();
