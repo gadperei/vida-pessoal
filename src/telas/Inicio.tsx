@@ -7,6 +7,7 @@ import { useBanco } from '../estado/contexto.tsx';
 import { AvisoInstalacao } from '../pwa/AvisoInstalacao.tsx';
 import { CartaoCheckin } from '../componentes/CartaoCheckin.tsx';
 import { CartoesMetas } from '../componentes/CartoesMetas.tsx';
+import { CartaoSemana } from '../componentes/CartaoSemana.tsx';
 import { MetaDestaque } from '../componentes/MetaDestaque.tsx';
 import { pendentes, proximaFolga, type Ocorrencia } from '../regras/agenda.ts';
 import { metasDoInicio } from '../regras/metas.ts';
@@ -19,6 +20,7 @@ interface Props {
   aoAbrirCheckin(): void;
   aoAbrirMeta(id: string): void;
   aoNovaMeta(): void;
+  aoVerSemana(segunda: Dia): void;
 }
 
 function Pendente({ item, hoje }: { item: Item; hoje: Dia }) {
@@ -42,7 +44,7 @@ function Pendente({ item, hoje }: { item: Item; hoje: Dia }) {
   );
 }
 
-export function Inicio({ hoje, aoAbrirItem, aoAbrirCheckin, aoAbrirMeta, aoNovaMeta }: Props) {
+export function Inicio({ hoje, aoAbrirItem, aoAbrirCheckin, aoAbrirMeta, aoNovaMeta, aoVerSemana }: Props) {
   const { banco } = useBanco();
   const { destaque, cartoes } = metasDoInicio(banco.metas, hoje);
   const [verPendentes, setVerPendentes] = useState(false);
@@ -57,6 +59,7 @@ export function Inicio({ hoje, aoAbrirItem, aoAbrirCheckin, aoAbrirMeta, aoNovaM
   return (
     <div className="conteudo">
       <AvisoInstalacao />
+      <CartaoSemana hoje={hoje} aoVer={aoVerSemana} />
       <MetaDestaque meta={destaque} etapas={banco.etapas} hoje={hoje} aoAbrir={aoAbrirMeta} aoCriar={aoNovaMeta} />
       <CartoesMetas metas={cartoes} etapas={banco.etapas} hoje={hoje} aoAbrir={aoAbrirMeta} />
       <CartaoCheckin hoje={hoje} aoAbrir={aoAbrirCheckin} />

@@ -16,7 +16,7 @@ import { Resumo } from './telas/Resumo.tsx';
 import { Metas } from './telas/Metas.tsx';
 import { DetalheMeta } from './telas/DetalheMeta.tsx';
 import { FormMeta } from './telas/formularios/FormMeta.tsx';
-import type { Meta } from './regras/tipos.ts';
+import type { Dia, Meta } from './regras/tipos.ts';
 import { AvisoAtualizacao } from './pwa/AvisoAtualizacao.tsx';
 import { ativarPush, situacaoPush } from './pwa/push.ts';
 import { lerPedidoDaUrl } from './estado/pedidoUrl.ts';
@@ -54,6 +54,9 @@ function Principal() {
   const [anotando, setAnotando] = useState(false);
   const [itemAberto, setItemAberto] = useState<Ocorrencia | null>(null);
   const [metaAberta, setMetaAberta] = useState<string | null>(null);
+  // Semana que o cartão "Sua semana passada" pediu para abrir no Resumo (vale só até trocar de aba).
+  const [semanaResumo, setSemanaResumo] = useState<Dia | null>(null);
+  const trocarAba = (a: Aba) => { setSemanaResumo(null); setAba(a); };
   const [formMeta, setFormMeta] = useState<{ aberto: boolean; meta: Meta | null }>({ aberto: false, meta: null });
 
   useEffect(() => {
@@ -79,7 +82,8 @@ function Principal() {
     <main className="app">
       <IndicadorSync />
       {aba === 'inicio' && (
-        <Inicio hoje={hoje} aoAbrirItem={setItemAberto} aoAbrirCheckin={() => setCheckinAberto(true)} aoAbrirMeta={setMetaAberta} aoNovaMeta={() => setFormMeta({ aberto: true, meta: null })} />
+        <Inicio hoje={hoje} aoAbrirItem={setItemAberto} aoAbrirCheckin={() => setCheckinAberto(true)} aoAbrirMeta={setMetaAberta} aoNovaMeta={() => setFormMeta({ aberto: true, meta: null })}
+          aoVerSemana={(segunda) => { setSemanaResumo(segunda); setAba('resumo'); }} />
       )}
       {aba === 'ajustes' && (
         <div className="conteudo">
@@ -90,9 +94,9 @@ function Principal() {
           </section>
         </div>
       )}
-      {aba === 'resumo' && <Resumo hoje={hoje} />}
+      {aba === 'resumo' && <Resumo key={semanaResumo ?? 'atual'} hoje={hoje} semanaInicial={semanaResumo} />}
       {aba === 'metas' && <Metas hoje={hoje} aoAbrir={setMetaAberta} aoNova={() => setFormMeta({ aberto: true, meta: null })} />}
-      <BarraAbas aba={aba} aoTrocar={setAba} aoAnotar={aba === 'inicio' ? () => setAnotando(true) : undefined} />
+      <BarraAbas aba={aba} aoTrocar={trocarAba} aoAnotar={aba === 'inicio' ? () => setAnotando(true) : undefined} />
       <PainelAnotar aberto={anotando} hoje={hoje} aoFechar={() => setAnotando(false)} />
       <EditarItem ocorrencia={itemAberto} hoje={hoje} aoFechar={() => setItemAberto(null)} />
       <PainelCheckin aberto={checkinAberto} hoje={hoje} aoFechar={() => setCheckinAberto(false)} />
