@@ -1,7 +1,8 @@
 import { formatarReais } from '../regras/dinheiro.ts';
 import { diasAtePrazo, progresso, textoPrazo } from '../regras/metas.ts';
 import type { Dia, Etapa, Meta } from '../regras/tipos.ts';
-import { degrade } from './cores.ts';
+import { corDaMeta } from './cores.ts';
+import { Onda } from './Onda.tsx';
 
 interface Props { meta: Meta | null; etapas: Etapa[]; hoje: Dia; aoAbrir(id: string): void; aoCriar(): void }
 
@@ -10,7 +11,7 @@ export function MetaDestaque({ meta, etapas, hoje, aoAbrir, aoCriar }: Props) {
   if (!meta) {
     return (
       <button type="button" className="meta-criar" onClick={aoCriar}>
-        <span>🎯 Criar uma meta</span>
+        <span>Criar uma meta</span>
         <span className="campo-dica">As de prioridade alta aparecem aqui</span>
       </button>
     );
@@ -18,11 +19,13 @@ export function MetaDestaque({ meta, etapas, hoje, aoAbrir, aoCriar }: Props) {
   const prazo = textoPrazo(diasAtePrazo(meta, hoje), meta.prazo);
   const minhas = etapas.filter((e) => e.meta_id === meta.id).sort((a, b) => a.ordem - b.ordem);
   const pct = Math.round(progresso(meta, etapas) * 100);
+  const cor = corDaMeta(meta.cor);
 
   return (
-    <button type="button" className="meta-destaque" style={{ background: degrade(meta.cor) }} onClick={() => aoAbrir(meta.id)}>
-      <span className="meta-k">Meta mais urgente</span>
-      <span className="meta-nome">{meta.icone} {meta.nome}</span>
+    <button type="button" className="meta-destaque" style={{ background: cor }} onClick={() => aoAbrir(meta.id)}>
+      <Onda cor={cor} pct={pct} />
+      <span className="meta-k">Meta mais urgente · {pct}% feito</span>
+      <span className="meta-nome"><span aria-hidden="true">{meta.icone}</span> {meta.nome}</span>
       {prazo.atrasada ? (
         <span className="meta-atrasada">{prazo.texto}</span>
       ) : (
@@ -35,10 +38,7 @@ export function MetaDestaque({ meta, etapas, hoje, aoAbrir, aoCriar }: Props) {
           </span>
         )
       ) : (
-        <>
-          <span className="meta-barra" aria-hidden="true"><i style={{ width: `${pct}%` }} /></span>
-          <span className="meta-valor">{pct}% · {formatarReais(meta.atual_centavos ?? 0)} de {formatarReais(meta.alvo_centavos ?? 0)}</span>
-        </>
+        <span className="meta-valor">{formatarReais(meta.atual_centavos ?? 0)} de {formatarReais(meta.alvo_centavos ?? 0)}</span>
       )}
     </button>
   );

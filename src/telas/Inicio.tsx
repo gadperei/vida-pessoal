@@ -12,6 +12,7 @@ import { MetaDestaque } from '../componentes/MetaDestaque.tsx';
 import { pendentes, proximaFolga, type Ocorrencia } from '../regras/agenda.ts';
 import { metasDoInicio } from '../regras/metas.ts';
 import { adicionarDias, rotuloDia } from '../regras/datas.ts';
+import { dataPorExtenso, saudacao } from '../regras/saudacao.ts';
 import type { Dia, Item } from '../regras/tipos.ts';
 
 interface Props {
@@ -58,6 +59,10 @@ export function Inicio({ hoje, aoAbrirItem, aoAbrirCheckin, aoAbrirMeta, aoNovaM
 
   return (
     <div className="conteudo">
+      <header className="saudacao">
+        <h1>{saudacao(new Date().getHours())}</h1>
+        <p>{dataPorExtenso(hoje)}</p>
+      </header>
       <AvisoInstalacao />
       <CartaoSemana hoje={hoje} aoVer={aoVerSemana} />
       <MetaDestaque meta={destaque} etapas={banco.etapas} hoje={hoje} aoAbrir={aoAbrirMeta} aoCriar={aoNovaMeta} />

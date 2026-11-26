@@ -11,6 +11,7 @@
     "deploy:funcoes": "node scripts/copiar-regras.mjs && npx supabase functions deploy enviar-notificacoes --no-verify-jwt --use-api"
   },
   "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
     "@supabase/supabase-js": "^2.119.0",
     "idb-keyval": "^6.3.0",
     "react": "^19.3.1",

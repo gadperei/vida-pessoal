@@ -1,14 +1,20 @@
-// Paleta fixa das metas. Todas deixam o texto branco legível (contraste ≥ 4,5:1, ver cores.test.ts).
+// Paleta fixa das metas: tons pastel com texto escuro (tinta) por cima (contraste ≥ 7:1, ver cores.test.ts).
 export const CORES_META = [
-  '#6c4cf0', // roxo
-  '#087f5b', // verde
-  '#c2410c', // laranja
-  '#c2255c', // rosa
-  '#1864ab', // azul
-  '#0b7285', // azul-petróleo
-  '#9c36b5', // uva
-  '#495057', // grafite
+  '#a8a4ff', // lavanda
+  '#7fdc8e', // verde
+  '#f7bd5e', // mostarda
+  '#f6a6c9', // rosa
+  '#93c8ff', // azul
+  '#82dccf', // menta
+  '#e2a9f7', // lilás
+  '#cdd0d9', // cinza
 ] as const;
+
+/** Cor do texto e dos contornos sobre os cartões coloridos. */
+export const TINTA = '#1d1b26';
+
+// Paleta antiga (cores fortes com texto branco), na mesma ordem da nova.
+const ANTIGAS = ['#6c4cf0', '#087f5b', '#c2410c', '#c2255c', '#1864ab', '#0b7285', '#9c36b5', '#495057'];
 
 const canais = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
 
@@ -31,7 +37,16 @@ function escurecer(hex: string, fator: number): string {
   return `#${canais(hex).map((v) => Math.round(v * (1 - fator)).toString(16).padStart(2, '0')).join('')}`;
 }
 
-/** Fundo dos cartões: da cor da meta para um tom mais escuro dela. */
-export function degrade(cor: string): string {
-  return `linear-gradient(135deg, ${cor}, ${escurecer(cor, 0.3)})`;
+/** A cor com que a meta aparece: metas criadas com a paleta antiga ganham o pastel equivalente. */
+export function corDaMeta(cor: string): string {
+  const i = ANTIGAS.indexOf(cor.toLowerCase());
+  return i >= 0 ? CORES_META[i] : cor;
 }
+
+/** Tom da "onda" que sobe no cartão conforme o progresso: a mesma cor, um pouco mais fechada. */
+export function tomDaOnda(cor: string): string {
+  return escurecer(cor, 0.14);
+}
+
+/** Nomes para o leitor de tela, na ordem de CORES_META. */
+export const NOMES_CORES = ['lavanda', 'verde', 'mostarda', 'rosa', 'azul', 'menta', 'lilás', 'cinza'] as const;

@@ -1,3 +1,4 @@
+import { corDaMeta } from '../componentes/cores.ts';
 import { useBanco } from '../estado/contexto.tsx';
 import { agruparMetas, diasAtePrazo, progresso, textoPrazo } from '../regras/metas.ts';
 import type { Dia, Meta } from '../regras/tipos.ts';
@@ -7,17 +8,18 @@ interface Props { hoje: Dia; aoAbrir(id: string): void; aoNova(): void }
 function LinhaMeta({ meta, hoje, aoAbrir }: { meta: Meta; hoje: Dia; aoAbrir(id: string): void }) {
   const { banco } = useBanco();
   const pct = Math.round(progresso(meta, banco.etapas) * 100);
+  const cor = corDaMeta(meta.cor);
   const prazo = meta.concluida_em
     ? { texto: `concluída em ${meta.concluida_em.slice(8, 10)}/${meta.concluida_em.slice(5, 7)}`, atrasada: false }
     : (() => { const t = textoPrazo(diasAtePrazo(meta, hoje), meta.prazo); return { texto: t.atrasada ? t.texto : `${t.numero} ${t.texto}`, atrasada: t.atrasada }; })();
   return (
     <li>
       <button type="button" className="linha-meta" onClick={() => aoAbrir(meta.id)}>
-        <span className="linha-meta-icone" style={{ background: meta.cor }} aria-hidden="true">{meta.icone}</span>
+        <span className="linha-meta-icone" style={{ background: cor }} aria-hidden="true">{meta.icone}</span>
         <span className="linha-meta-texto">
           <strong>{meta.nome}</strong>
           <span className={prazo.atrasada ? 'texto-atrasada' : 'campo-dica'}>{prazo.texto}</span>
-          <span className="barra-meta" aria-hidden="true"><i style={{ width: `${pct}%`, background: meta.cor }} /></span>
+          <span className="barra-meta" aria-hidden="true"><i style={{ width: `${pct}%`, background: cor }} /></span>
         </span>
         <span className="num linha-meta-pct">{pct}%</span>
       </button>

@@ -17,7 +17,7 @@ interface Props {
 const ehAviso = (o: Ocorrencia) => o.item.tipo !== 'tarefa';
 
 function Etiqueta({ d, aoTocar }: { d: DiaDaLinha; aoTocar(): void }) {
-  const texto = d.extra ? 'DIA EXTRA' : d.tipo === 'T' ? 'TRABALHO' : 'FOLGA';
+  const texto = d.extra ? 'Dia extra' : d.tipo === 'T' ? 'Trabalho' : 'Folga';
   return (
     <button type="button" className={`etiqueta ${d.tipo === 'T' ? 'etiqueta-t' : 'etiqueta-f'}`} onClick={aoTocar} aria-label={`${texto}. Toque para mudar`}>
       {texto}

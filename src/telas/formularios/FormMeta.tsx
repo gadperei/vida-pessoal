@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { CampoValor } from '../../componentes/CampoValor.tsx';
-import { CORES_META } from '../../componentes/cores.ts';
+import { CORES_META, NOMES_CORES, corDaMeta } from '../../componentes/cores.ts';
 import { PainelInferior } from '../../componentes/PainelInferior.tsx';
 import { agoraIso, novoId } from '../../dados/ids.ts';
 import { criarMeta, editarMeta, type CamposMeta } from '../../dados/opsMetas.ts';
@@ -35,7 +35,7 @@ export function FormMeta({ aberto, meta, hoje, aoFechar }: Props) {
     if (!aberto) return;
     setNome(meta?.nome ?? '');
     setIcone(meta?.icone ?? '🎯');
-    setCor(meta?.cor ?? CORES_META[0]);
+    setCor(meta ? corDaMeta(meta.cor) : CORES_META[0]);
     setTipo(meta?.tipo ?? 'conquista');
     setPrazo(meta?.prazo ?? `${hoje.slice(0, 4)}-12-31`);
     setPrioridade(meta?.prioridade ?? 'alta');
@@ -95,8 +95,8 @@ export function FormMeta({ aberto, meta, hoje, aoFechar }: Props) {
         <div role="radiogroup" aria-label="Cor">
           <p className="rotulo">Cor</p>
           <div className="chips">
-            {CORES_META.map((c) => (
-              <button key={c} type="button" role="radio" aria-checked={cor === c} aria-label={`Cor ${c}`} className={`chip-cor ${cor === c ? 'chip-cor-ativa' : ''}`} style={{ background: c }} onClick={() => setCor(c)} />
+            {CORES_META.map((c, i) => (
+              <button key={c} type="button" role="radio" aria-checked={cor === c} aria-label={`Cor ${NOMES_CORES[i]}`} className={`chip-cor ${cor === c ? 'chip-cor-ativa' : ''}`} style={{ background: c }} onClick={() => setCor(c)} />
             ))}
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { corDaMeta } from '../componentes/cores.ts';
 import { CampoValor } from '../componentes/CampoValor.tsx';
 import { PainelInferior } from '../componentes/PainelInferior.tsx';
 import { agoraIso, novoId } from '../dados/ids.ts';
@@ -90,7 +91,7 @@ export function DetalheMeta({ metaId, hoje, aoFechar, aoEditar }: Props) {
       {!concluida && <p className={prazo.atrasada ? 'texto-atrasada' : 'detalhe-prazo'}>{prazo.atrasada ? prazo.texto : `${prazo.numero} ${prazo.texto}`}</p>}
 
       <div className="detalhe-progresso">
-        <span className="barra-meta" aria-hidden="true"><i style={{ width: `${pct}%`, background: meta.cor }} /></span>
+        <span className="barra-meta" aria-hidden="true"><i style={{ width: `${pct}%`, background: corDaMeta(meta.cor) }} /></span>
         <span className="num">{pct}%</span>
       </div>
 
