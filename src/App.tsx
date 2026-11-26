@@ -13,6 +13,10 @@ import { ConfiguracaoInicial } from './telas/ConfiguracaoInicial.tsx';
 import { Entrar } from './telas/Entrar.tsx';
 import { Inicio } from './telas/Inicio.tsx';
 import { Resumo } from './telas/Resumo.tsx';
+import { Metas } from './telas/Metas.tsx';
+import { DetalheMeta } from './telas/DetalheMeta.tsx';
+import { FormMeta } from './telas/formularios/FormMeta.tsx';
+import type { Meta } from './regras/tipos.ts';
 import { AvisoAtualizacao } from './pwa/AvisoAtualizacao.tsx';
 import { ativarPush, situacaoPush } from './pwa/push.ts';
 import { lerPedidoDaUrl } from './estado/pedidoUrl.ts';
@@ -49,6 +53,8 @@ function Principal() {
   const hoje = useHoje();
   const [anotando, setAnotando] = useState(false);
   const [itemAberto, setItemAberto] = useState<Ocorrencia | null>(null);
+  const [metaAberta, setMetaAberta] = useState<string | null>(null);
+  const [formMeta, setFormMeta] = useState<{ aberto: boolean; meta: Meta | null }>({ aberto: false, meta: null });
 
   useEffect(() => {
     if (window.location.search) window.history.replaceState(null, '', window.location.pathname);
@@ -72,7 +78,9 @@ function Principal() {
   return (
     <main className="app">
       <IndicadorSync />
-      {aba === 'inicio' && <Inicio hoje={hoje} aoAbrirItem={setItemAberto} aoAbrirCheckin={() => setCheckinAberto(true)} />}
+      {aba === 'inicio' && (
+        <Inicio hoje={hoje} aoAbrirItem={setItemAberto} aoAbrirCheckin={() => setCheckinAberto(true)} aoAbrirMeta={setMetaAberta} aoNovaMeta={() => setFormMeta({ aberto: true, meta: null })} />
+      )}
       {aba === 'ajustes' && (
         <div className="conteudo">
           {/* Os Ajustes completos entram na Task 22; as notificações já ficam aqui. */}
@@ -83,15 +91,13 @@ function Principal() {
         </div>
       )}
       {aba === 'resumo' && <Resumo hoje={hoje} />}
-      {aba === 'metas' && (
-        <div className="conteudo">
-          <p className="espaco-reservado">Aba: {aba}</p>
-        </div>
-      )}
+      {aba === 'metas' && <Metas hoje={hoje} aoAbrir={setMetaAberta} aoNova={() => setFormMeta({ aberto: true, meta: null })} />}
       <BarraAbas aba={aba} aoTrocar={setAba} aoAnotar={aba === 'inicio' ? () => setAnotando(true) : undefined} />
       <PainelAnotar aberto={anotando} hoje={hoje} aoFechar={() => setAnotando(false)} />
       <EditarItem ocorrencia={itemAberto} hoje={hoje} aoFechar={() => setItemAberto(null)} />
       <PainelCheckin aberto={checkinAberto} hoje={hoje} aoFechar={() => setCheckinAberto(false)} />
+      <DetalheMeta metaId={metaAberta} hoje={hoje} aoFechar={() => setMetaAberta(null)} aoEditar={(m) => { setMetaAberta(null); setFormMeta({ aberto: true, meta: m }); }} />
+      <FormMeta aberto={formMeta.aberto} meta={formMeta.meta} hoje={hoje} aoFechar={() => setFormMeta({ aberto: false, meta: null })} />
       {aviso && <Toast mensagem={aviso} aoSumir={limparAviso} />}
     </main>
   );

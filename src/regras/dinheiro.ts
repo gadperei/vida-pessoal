@@ -14,3 +14,8 @@ export function centavosDeDigitos(texto: string): Centavos {
   const digitos = texto.replace(/\D/g, '').slice(0, MAX_DIGITOS);
   return digitos ? Number(digitos) : 0;
 }
+
+/** 120000 → "R$ 1.200" (arredondado, sem centavos). */
+export function reaisCurto(c: Centavos): string {
+  return `R$ ${Math.round(c / 100).toLocaleString('pt-BR')}`;
+}

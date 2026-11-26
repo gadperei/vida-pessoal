@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { etapa, HOJE, meta } from '../testes/fabrica.ts';
-import { agruparMetas, diasAtePrazo, metasDoInicio, progresso, sugerirConcluir } from './metas.ts';
+import { agruparMetas, diasAtePrazo, metasDoInicio, progresso, sugerirConcluir, textoPrazo } from './metas.ts';
 
 it('progresso por tipo', () => {
   const m = meta({ id: 'm' });
@@ -41,4 +41,12 @@ it('agrupa por prioridade; concluídas pela mais recente', () => {
   const c2 = meta({ nome: 'c2', prioridade: 'baixa', concluida_em: '2026-11-01' });
   const g = agruparMetas([a2, c1, m1, a1, b1, c2]);
   expect([g.alta, g.media, g.baixa, g.concluidas].map((l) => l.map((x) => x.nome))).toEqual([['a1', 'a2'], ['m1'], ['b1'], ['c2', 'c1']]);
+});
+
+it('texto do prazo: contagem, hoje e atrasada', () => {
+  expect(textoPrazo(45, '2026-12-31')).toEqual({ numero: '45', texto: 'dias até 31/12', curto: '45 d', atrasada: false });
+  expect(textoPrazo(1, '2026-11-17')).toEqual({ numero: '1', texto: 'dia até 17/11', curto: '1 d', atrasada: false });
+  expect(textoPrazo(0, '2026-11-16')).toEqual({ numero: 'Hoje', texto: 'é o prazo', curto: 'hoje', atrasada: false });
+  expect(textoPrazo(-3, '2026-11-13')).toEqual({ numero: '', texto: 'atrasada há 3 dias', curto: 'atrasada', atrasada: true });
+  expect(textoPrazo(-1, '2026-11-15').texto).toBe('atrasada há 1 dia');
 });

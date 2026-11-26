@@ -6,7 +6,10 @@ import { alternarFeito, excluirLinha, moverItem } from '../dados/opsAgenda.ts';
 import { useBanco } from '../estado/contexto.tsx';
 import { AvisoInstalacao } from '../pwa/AvisoInstalacao.tsx';
 import { CartaoCheckin } from '../componentes/CartaoCheckin.tsx';
+import { CartoesMetas } from '../componentes/CartoesMetas.tsx';
+import { MetaDestaque } from '../componentes/MetaDestaque.tsx';
 import { pendentes, proximaFolga, type Ocorrencia } from '../regras/agenda.ts';
+import { metasDoInicio } from '../regras/metas.ts';
 import { adicionarDias, rotuloDia } from '../regras/datas.ts';
 import type { Dia, Item } from '../regras/tipos.ts';
 
@@ -14,6 +17,8 @@ interface Props {
   hoje: Dia;
   aoAbrirItem(o: Ocorrencia): void;
   aoAbrirCheckin(): void;
+  aoAbrirMeta(id: string): void;
+  aoNovaMeta(): void;
 }
 
 function Pendente({ item, hoje }: { item: Item; hoje: Dia }) {
@@ -37,8 +42,9 @@ function Pendente({ item, hoje }: { item: Item; hoje: Dia }) {
   );
 }
 
-export function Inicio({ hoje, aoAbrirItem, aoAbrirCheckin }: Props) {
+export function Inicio({ hoje, aoAbrirItem, aoAbrirCheckin, aoAbrirMeta, aoNovaMeta }: Props) {
   const { banco } = useBanco();
+  const { destaque, cartoes } = metasDoInicio(banco.metas, hoje);
   const [verPendentes, setVerPendentes] = useState(false);
   const lista = pendentes(hoje, banco.itens);
 
@@ -51,7 +57,8 @@ export function Inicio({ hoje, aoAbrirItem, aoAbrirCheckin }: Props) {
   return (
     <div className="conteudo">
       <AvisoInstalacao />
-      {/* Metas em destaque (Task 20) entram aqui. */}
+      <MetaDestaque meta={destaque} etapas={banco.etapas} hoje={hoje} aoAbrir={aoAbrirMeta} aoCriar={aoNovaMeta} />
+      <CartoesMetas metas={cartoes} etapas={banco.etapas} hoje={hoje} aoAbrir={aoAbrirMeta} />
       <CartaoCheckin hoje={hoje} aoAbrir={aoAbrirCheckin} />
       <LinhaDoTempo hoje={hoje} aoAbrirItem={aoAbrirItem} topoDeHoje={topoDeHoje} />
       <PainelInferior aberto={verPendentes && lista.length > 0} titulo="Pendentes" aoFechar={() => setVerPendentes(false)}>

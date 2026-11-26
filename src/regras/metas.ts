@@ -44,3 +44,14 @@ export function agruparMetas(metas: Meta[]): { alta: Meta[]; media: Meta[]; baix
       .sort((a, b) => ((a.concluida_em as string) < (b.concluida_em as string) ? 1 : -1)),
   };
 }
+
+/** "45 dias até 31/12", "Hoje é o prazo" ou "atrasada há 3 dias"; `curto` vai nos cartões pequenos. */
+export function textoPrazo(dias: number, prazo: Dia): { numero: string; texto: string; curto: string; atrasada: boolean } {
+  const data = `${prazo.slice(8, 10)}/${prazo.slice(5, 7)}`;
+  if (dias < 0) {
+    const n = -dias;
+    return { numero: '', texto: `atrasada há ${n} ${n === 1 ? 'dia' : 'dias'}`, curto: 'atrasada', atrasada: true };
+  }
+  if (dias === 0) return { numero: 'Hoje', texto: 'é o prazo', curto: 'hoje', atrasada: false };
+  return { numero: String(dias), texto: `${dias === 1 ? 'dia' : 'dias'} até ${data}`, curto: `${dias} d`, atrasada: false };
+}
