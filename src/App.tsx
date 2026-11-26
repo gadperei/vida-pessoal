@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { AtivarNotificacoes } from './componentes/AtivarNotificacoes.tsx';
 import { BarraAbas, type Aba } from './componentes/BarraAbas.tsx';
 import { EditarItem } from './componentes/EditarItem.tsx';
 import { IndicadorSync } from './componentes/IndicadorSync.tsx';
@@ -13,6 +12,7 @@ import { ConfiguracaoInicial } from './telas/ConfiguracaoInicial.tsx';
 import { Entrar } from './telas/Entrar.tsx';
 import { Inicio } from './telas/Inicio.tsx';
 import { Resumo } from './telas/Resumo.tsx';
+import { Ajustes } from './telas/Ajustes.tsx';
 import { Metas } from './telas/Metas.tsx';
 import { DetalheMeta } from './telas/DetalheMeta.tsx';
 import { FormMeta } from './telas/formularios/FormMeta.tsx';
@@ -85,15 +85,7 @@ function Principal() {
         <Inicio hoje={hoje} aoAbrirItem={setItemAberto} aoAbrirCheckin={() => setCheckinAberto(true)} aoAbrirMeta={setMetaAberta} aoNovaMeta={() => setFormMeta({ aberto: true, meta: null })}
           aoVerSemana={(segunda) => { setSemanaResumo(segunda); setAba('resumo'); }} />
       )}
-      {aba === 'ajustes' && (
-        <div className="conteudo">
-          {/* Os Ajustes completos entram na Task 22; as notificações já ficam aqui. */}
-          <section className="card">
-            <h2>Notificações</h2>
-            <AtivarNotificacoes />
-          </section>
-        </div>
-      )}
+      {aba === 'ajustes' && <Ajustes hoje={hoje} aoEditarItem={setItemAberto} />}
       {aba === 'resumo' && <Resumo key={semanaResumo ?? 'atual'} hoje={hoje} semanaInicial={semanaResumo} />}
       {aba === 'metas' && <Metas hoje={hoje} aoAbrir={setMetaAberta} aoNova={() => setFormMeta({ aberto: true, meta: null })} />}
       <BarraAbas aba={aba} aoTrocar={trocarAba} aoAnotar={aba === 'inicio' ? () => setAnotando(true) : undefined} />

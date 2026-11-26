@@ -65,3 +65,11 @@ export function editarRepeticao(item: Item, nova: Repeticao, hoje: Dia, novoId: 
     { tabela: 'itens', linha: copia },
   ];
 }
+
+/** Para de repetir: termina ontem (o histórico fica), ou exclui se a repetição nem começou. */
+export function encerrarRepeticao(item: Item, hoje: Dia, agora: string): Mudanca {
+  const linha: Item = item.data >= hoje
+    ? { ...item, excluido_em: agora, atualizado_em: agora }
+    : { ...item, repete_ate: adicionarDias(hoje, -1), atualizado_em: agora };
+  return { tabela: 'itens', linha };
+}

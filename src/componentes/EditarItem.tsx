@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { agoraIso, novoId } from '../dados/ids.ts';
-import { alternarFeito, editarItem, editarRepeticao, excluirLinha } from '../dados/opsAgenda.ts';
+import { alternarFeito, editarItem, editarRepeticao, encerrarRepeticao, excluirLinha } from '../dados/opsAgenda.ts';
 import { desligarTreino } from '../dados/opsConfig.ts';
 import type { Mudanca } from '../dados/banco.ts';
 import { useBanco } from '../estado/contexto.tsx';
 import type { Ocorrencia } from '../regras/agenda.ts';
-import { adicionarDias, rotuloDia } from '../regras/datas.ts';
+import { rotuloDia } from '../regras/datas.ts';
 import type { Dia } from '../regras/tipos.ts';
 import { CamposItem, type ValoresItem } from './CamposItem.tsx';
 import { PainelInferior } from './PainelInferior.tsx';
@@ -52,7 +52,7 @@ export function EditarItem({ ocorrencia, hoje, aoFechar }: Props) {
     const agora = agoraIso();
     const config = banco.config[0];
     if (ehTreino && config) salvar(desligarTreino(config, item, hoje, agora));
-    else if (repetido && item.data < hoje) salvar({ tabela: 'itens', linha: { ...item, repete_ate: adicionarDias(hoje, -1), atualizado_em: agora } });
+    else if (repetido) salvar(encerrarRepeticao(item, hoje, agora));
     else salvar(excluirLinha('itens', item, agora));
     aoFechar();
   }

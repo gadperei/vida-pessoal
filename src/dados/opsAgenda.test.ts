@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import type { Conclusao, Excecao, Item } from '../regras/tipos.ts';
 import { AGORA, banco, excecao, HOJE, item } from '../testes/fabrica.ts';
-import { alternarFeito, desfazerDiaExtra, excluirLinha, marcarDiaExtra, moverItem } from './opsAgenda.ts';
+import { alternarFeito, desfazerDiaExtra, encerrarRepeticao, excluirLinha, marcarDiaExtra, moverItem } from './opsAgenda.ts';
 
 it('marcar e desmarcar repetida usa conclusão', () => {
   const t = item({ id: 't', repeticao: 'folgas', data: '2026-11-13' });
@@ -45,4 +45,10 @@ it('mudar a repetição não reescreve o passado', async () => {
     ['t', 'folgas', '2026-11-15', '2026-11-13'], ['n', 'todo_dia', null, HOJE],
   ]);
   expect(editarRepeticao({ ...t, data: HOJE }, 'todo_dia', HOJE, () => 'n', AGORA)).toHaveLength(1);
+});
+
+it('encerrar repetição: termina ontem, ou exclui se ainda nem começou', () => {
+  const t = item({ id: 't', repeticao: 'todo_dia', data: '2026-11-10' });
+  expect(encerrarRepeticao(t, HOJE, AGORA).linha).toMatchObject({ id: 't', repete_ate: '2026-11-15', excluido_em: null, atualizado_em: AGORA });
+  expect(encerrarRepeticao({ ...t, data: HOJE }, HOJE, AGORA).linha).toMatchObject({ excluido_em: AGORA });
 });

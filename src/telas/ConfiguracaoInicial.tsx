@@ -42,7 +42,7 @@ export function ConfiguracaoInicial() {
       ciclo,
       posicaoHoje: posicao ?? 0,
       faculdade: temFaculdade
-        ? { dias, sabadoComAula: sabadosAlternados ? proximoSabadoTemAula : false, semestreFim: semestreFim || null }
+        ? { dias, sabadosAlternados, sabadoComAula: proximoSabadoTemAula, semestreFim: semestreFim || null }
         : null,
       treinoNasFolgas: treino,
       metaSonoMin: sono,

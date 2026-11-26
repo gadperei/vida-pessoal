@@ -1,9 +1,9 @@
 import { expect, it } from 'vitest';
-import type { Config, Escala, Item } from '../regras/tipos.ts';
+import type { Config, Escala, Excecao, Item } from '../regras/tipos.ts';
 import { AGORA, config, escala, HOJE, ids, item } from '../testes/fabrica.ts';
-import { configuracaoInicial, desligarTreino, ligarTreino, trocarEscala, type RespostasConfig } from './opsConfig.ts';
+import { configuracaoInicial, criarExcecao, desligarTreino, editarConfig, editarFaculdade, ligarTreino, trocarEscala, type RespostasConfig } from './opsConfig.ts';
 
-const r: RespostasConfig = { ciclo: 'TTTFFFTTFF', posicaoHoje: 3, faculdade: { dias: [1, 2, 3, 4, 5], sabadoComAula: true, semestreFim: null }, treinoNasFolgas: true, metaSonoMin: 420, metaTreinosSemana: 3, metaLivrosMes: 1, horarioAvisos: '08:00' };
+const r: RespostasConfig = { ciclo: 'TTTFFFTTFF', posicaoHoje: 3, faculdade: { dias: [1, 2, 3, 4, 5], sabadosAlternados: true, sabadoComAula: true, semestreFim: null }, treinoNasFolgas: true, metaSonoMin: 420, metaTreinosSemana: 3, metaLivrosMes: 1, horarioAvisos: '08:00' };
 
 it('gera config, escala e treino', () => {
   const m = configuracaoInicial(r, HOJE, ids(), AGORA);
@@ -45,4 +45,24 @@ it('desligar treino encerra ontem ou exclui se começou hoje', () => {
   expect((ms.find((m) => m.tabela === 'itens')!.linha as Item).repete_ate).toBe('2026-11-15');
   expect((ms.find((m) => m.tabela === 'config')!.linha as Config).treino_item_id).toBeNull();
   expect((desligarTreino(config({ treino_item_id: 't' }), { ...t, data: HOJE }, HOJE, AGORA).find((m) => m.tabela === 'itens')!.linha as Item).excluido_em).toBe(AGORA);
+});
+it('sem sábados alternados, nenhum sábado tem aula', () => {
+  const m = configuracaoInicial({ ...r, faculdade: { ...r.faculdade!, sabadosAlternados: false, sabadoComAula: false } }, HOJE, ids(), AGORA);
+  expect((m[0].linha as Config).sabado_referencia).toBeNull();
+});
+it('editar faculdade nos Ajustes', () => {
+  const c = config({ sabado_referencia: '2026-11-21' });
+  const f = { dias: [2, 4], sabadosAlternados: true, sabadoComAula: false, semestreFim: '2026-12-15' };
+  expect(editarFaculdade(c, f, HOJE, AGORA).linha).toMatchObject({ aula_dias_semana: [2, 4], sabado_referencia: '2026-11-28', semestre_fim: '2026-12-15', atualizado_em: AGORA });
+  expect(editarFaculdade(c, { ...f, sabadosAlternados: false }, HOJE, AGORA).linha).toMatchObject({ sabado_referencia: null });
+  expect(editarFaculdade(c, null, HOJE, AGORA).linha).toMatchObject({ aula_dias_semana: [], sabado_referencia: null, semestre_fim: null });
+});
+it('editar config troca só os campos pedidos', () => {
+  expect(editarConfig(config({ horario_avisos: '08:00', meta_sono_min: 420 }), { horario_avisos: '07:30' }, AGORA).linha).toMatchObject({ id: 'config', horario_avisos: '07:30', meta_sono_min: 420, atualizado_em: AGORA });
+});
+it('exceção: folga, trabalho ou sem aula; datas invertidas são desviradas', () => {
+  const f = criarExcecao({ inicio: '2026-12-20', fim: '2026-12-10', tipo: 'folga' }, ids(), AGORA).linha as Excecao;
+  expect(f).toMatchObject({ id: 'n1', inicio: '2026-12-10', fim: '2026-12-20', tipo_dia: 'F', sem_aula: false, excluido_em: null });
+  expect(criarExcecao({ inicio: HOJE, fim: HOJE, tipo: 'trabalho' }, ids(), AGORA).linha).toMatchObject({ tipo_dia: 'T', sem_aula: false });
+  expect(criarExcecao({ inicio: HOJE, fim: HOJE, tipo: 'sem_aula' }, ids(), AGORA).linha).toMatchObject({ tipo_dia: null, sem_aula: true });
 });
