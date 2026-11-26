@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  adicionarDias, agoraEmSaoPaulo, diaDaSemana, diasDoMes, diasEntre, hojeLocal, horaDeMinutos,
+  adicionarDias, adicionarMeses, agoraEmSaoPaulo, diaDaSemana, diasDoMes, diasEntre, hojeLocal, horaDeMinutos,
   inicioDaSemana, mesDe, minutosDeHora, nomeMes, rotuloDia,
 } from './datas.ts';
 
@@ -41,4 +41,11 @@ it('duração em horas', async () => {
   expect(duracao(390)).toBe('6h30');
   expect(duracao(365)).toBe('6h05');
   expect(duracao(45)).toBe('0h45');
+});
+
+it('soma meses atravessando o ano', () => {
+  expect(adicionarMeses('2026-11', -1)).toBe('2026-10');
+  expect(adicionarMeses('2026-01', -1)).toBe('2025-12');
+  expect(adicionarMeses('2026-12', 1)).toBe('2027-01');
+  expect(adicionarMeses('2026-11', -13)).toBe('2025-10');
 });

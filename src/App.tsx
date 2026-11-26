@@ -12,6 +12,7 @@ import { useSessao } from './estado/useSessao.ts';
 import { ConfiguracaoInicial } from './telas/ConfiguracaoInicial.tsx';
 import { Entrar } from './telas/Entrar.tsx';
 import { Inicio } from './telas/Inicio.tsx';
+import { Resumo } from './telas/Resumo.tsx';
 import { AvisoAtualizacao } from './pwa/AvisoAtualizacao.tsx';
 import { ativarPush, situacaoPush } from './pwa/push.ts';
 import { lerPedidoDaUrl } from './estado/pedidoUrl.ts';
@@ -81,7 +82,8 @@ function Principal() {
           </section>
         </div>
       )}
-      {(aba === 'resumo' || aba === 'metas') && (
+      {aba === 'resumo' && <Resumo hoje={hoje} />}
+      {aba === 'metas' && (
         <div className="conteudo">
           <p className="espaco-reservado">Aba: {aba}</p>
         </div>

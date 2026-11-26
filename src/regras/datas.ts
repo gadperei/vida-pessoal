@@ -45,6 +45,13 @@ export function mesDe(d: Dia): string {
   return d.slice(0, 7);
 }
 
+/** '2026-11' + (-1) → '2026-10'. */
+export function adicionarMeses(mes: string, n: number): string {
+  const [a, m] = mes.split('-').map(Number);
+  const total = a * 12 + (m - 1) + n;
+  return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}`;
+}
+
 /** Quantos dias tem o mês 'AAAA-MM'. */
 export function diasDoMes(mes: string): number {
   const [a, m] = mes.split('-').map(Number);

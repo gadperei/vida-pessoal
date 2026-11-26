@@ -19,6 +19,9 @@
   --grafico-verde: #1f9d6b;
   --grafico-amarelo: #e9a800;
   --grafico-vermelho: #e04848;
+  /* Gráfico de sono: noite antes de trabalho × antes de folga (validado com o dataviz). */
+  --grafico-trabalho: #5b3df5;
+  --grafico-folga: #1f9d6b;
   --sombra: 0 1px 2px rgb(16 24 40 / 6%), 0 2px 8px rgb(16 24 40 / 6%);
   --raio: 14px;
   --raio-p: 9px;
@@ -47,6 +50,8 @@
     --amarelo-fundo: #3a301a;
     --vermelho: #ff8080;
     --vermelho-fundo: #3d1d22;
+    --grafico-trabalho: #8a78ff;
+    --grafico-folga: #2fa673;
     --sombra: 0 1px 2px rgb(0 0 0 / 30%);
   }
 }
@@ -474,3 +479,24 @@ form .chips { margin-bottom: 0; }
 .chips-emoji .chip { font-size: 1.4rem; min-width: 56px; }
 .linha-acao { display: flex; gap: 8px; }
 .linha-acao input { flex: 1; }
+
+/* ---------- resumo do mês ---------- */
+.navegar-mes { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.navegar-mes h1 { font-size: 1.25rem; margin: 0; text-align: center; flex: 1; }
+.navegar-mes .botao { width: var(--toque); padding: 0; font-size: 1.4rem; }
+.resumo-sem-registro { margin-bottom: 12px; text-align: center; }
+.resumo-linhas { margin: 0 0 8px; }
+.resumo-linha { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--superficie-2); }
+.resumo-linha:last-child { border-bottom: 0; }
+.resumo-linha dt { color: var(--texto-2); }
+.resumo-linha dd { margin: 0; font-weight: 700; text-align: right; }
+.grafico-sono { margin: 8px 0 0; }
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.8rem; color: var(--texto-2); margin-bottom: 6px; }
+.legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.legenda i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.legenda i.legenda-linha { width: 14px; height: 0; border-top: 1.5px solid var(--texto-suave); border-radius: 0; }
+.grafico-dica { background: var(--superficie); border: 1px solid var(--borda); border-radius: var(--raio-p); padding: 6px 10px; font-size: 0.85rem; box-shadow: var(--sombra); color: var(--texto); }
+.grafico-tabela summary { cursor: pointer; color: var(--primaria); font-weight: 600; font-size: 0.88rem; min-height: var(--toque); display: flex; align-items: center; }
+.grafico-tabela table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.grafico-tabela th, .grafico-tabela td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--superficie-2); }
+.grafico-tabela th { color: var(--texto-2); font-weight: 600; }
