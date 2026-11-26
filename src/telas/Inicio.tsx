@@ -5,6 +5,7 @@ import { agoraIso } from '../dados/ids.ts';
 import { alternarFeito, excluirLinha, moverItem } from '../dados/opsAgenda.ts';
 import { useBanco } from '../estado/contexto.tsx';
 import { AvisoInstalacao } from '../pwa/AvisoInstalacao.tsx';
+import { CartaoCheckin } from '../componentes/CartaoCheckin.tsx';
 import { pendentes, proximaFolga, type Ocorrencia } from '../regras/agenda.ts';
 import { adicionarDias, rotuloDia } from '../regras/datas.ts';
 import type { Dia, Item } from '../regras/tipos.ts';
@@ -12,6 +13,7 @@ import type { Dia, Item } from '../regras/tipos.ts';
 interface Props {
   hoje: Dia;
   aoAbrirItem(o: Ocorrencia): void;
+  aoAbrirCheckin(): void;
 }
 
 function Pendente({ item, hoje }: { item: Item; hoje: Dia }) {
@@ -35,7 +37,7 @@ function Pendente({ item, hoje }: { item: Item; hoje: Dia }) {
   );
 }
 
-export function Inicio({ hoje, aoAbrirItem }: Props) {
+export function Inicio({ hoje, aoAbrirItem, aoAbrirCheckin }: Props) {
   const { banco } = useBanco();
   const [verPendentes, setVerPendentes] = useState(false);
   const lista = pendentes(hoje, banco.itens);
@@ -49,7 +51,8 @@ export function Inicio({ hoje, aoAbrirItem }: Props) {
   return (
     <div className="conteudo">
       <AvisoInstalacao />
-      {/* Metas em destaque (Task 20) e registro do dia (Task 18) entram aqui. */}
+      {/* Metas em destaque (Task 20) entram aqui. */}
+      <CartaoCheckin hoje={hoje} aoAbrir={aoAbrirCheckin} />
       <LinhaDoTempo hoje={hoje} aoAbrirItem={aoAbrirItem} topoDeHoje={topoDeHoje} />
       <PainelInferior aberto={verPendentes && lista.length > 0} titulo="Pendentes" aoFechar={() => setVerPendentes(false)}>
         <ul className="lista-pendentes">

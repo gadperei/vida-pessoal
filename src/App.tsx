@@ -4,6 +4,7 @@ import { BarraAbas, type Aba } from './componentes/BarraAbas.tsx';
 import { EditarItem } from './componentes/EditarItem.tsx';
 import { IndicadorSync } from './componentes/IndicadorSync.tsx';
 import { PainelAnotar } from './componentes/PainelAnotar.tsx';
+import { PainelCheckin } from './componentes/PainelCheckin.tsx';
 import { Toast } from './componentes/Toast.tsx';
 import { BancoProvider, useBanco } from './estado/contexto.tsx';
 import { useHoje } from './estado/useHoje.ts';
@@ -40,9 +41,10 @@ function Conteudo() {
 
 function Principal() {
   const { banco, pronto, aviso, limparAviso, status } = useBanco();
-  // A notificação abre "/?aba=metas" ou "/?abrir=checkin" (o check-in entra na Task 18).
+  // A notificação abre "/?aba=metas" ou "/?abrir=checkin".
   const [pedido] = useState(() => lerPedidoDaUrl(window.location.search));
   const [aba, setAba] = useState<Aba>(pedido.aba ?? 'inicio');
+  const [checkinAberto, setCheckinAberto] = useState(pedido.abrirCheckin);
   const hoje = useHoje();
   const [anotando, setAnotando] = useState(false);
   const [itemAberto, setItemAberto] = useState<Ocorrencia | null>(null);
@@ -69,7 +71,7 @@ function Principal() {
   return (
     <main className="app">
       <IndicadorSync />
-      {aba === 'inicio' && <Inicio hoje={hoje} aoAbrirItem={setItemAberto} />}
+      {aba === 'inicio' && <Inicio hoje={hoje} aoAbrirItem={setItemAberto} aoAbrirCheckin={() => setCheckinAberto(true)} />}
       {aba === 'ajustes' && (
         <div className="conteudo">
           {/* Os Ajustes completos entram na Task 22; as notificações já ficam aqui. */}
@@ -87,6 +89,7 @@ function Principal() {
       <BarraAbas aba={aba} aoTrocar={setAba} aoAnotar={aba === 'inicio' ? () => setAnotando(true) : undefined} />
       <PainelAnotar aberto={anotando} hoje={hoje} aoFechar={() => setAnotando(false)} />
       <EditarItem ocorrencia={itemAberto} hoje={hoje} aoFechar={() => setItemAberto(null)} />
+      <PainelCheckin aberto={checkinAberto} hoje={hoje} aoFechar={() => setCheckinAberto(false)} />
       {aviso && <Toast mensagem={aviso} aoSumir={limparAviso} />}
     </main>
   );
