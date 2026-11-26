@@ -590,3 +590,4 @@ form .chips { margin-bottom: 0; }
 .lista-ajustes li:last-child { border-bottom: 0; }
 .lista-ajustes-acoes { display: flex; flex-shrink: 0; }
 .chip-perigo-texto { color: var(--vermelho); }
+.aguardar-dados { flex-direction: column; gap: 14px; text-align: center; padding: 24px; }

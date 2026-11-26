@@ -74,3 +74,20 @@ export async function ativarPush(cliente: SupabaseClient): Promise<'ok' | 'negad
   if (error) throw new Error(error.message);
   return 'ok';
 }
+
+/**
+ * Ao sair: apaga a inscrição deste aparelho no Supabase (enquanto a sessão ainda vale) e cancela no navegador.
+ * Sem internet, cancelar já basta: o servidor recebe 410 no próximo envio e apaga a inscrição sozinho.
+ */
+export async function desativarPush(cliente: SupabaseClient): Promise<void> {
+  if (!('serviceWorker' in navigator)) return;
+  const registro = await Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<null>((r) => setTimeout(() => r(null), 2000)),
+  ]);
+  if (!registro || !('pushManager' in registro)) return;
+  const inscricao = await registro.pushManager.getSubscription().catch(() => null);
+  if (!inscricao) return;
+  await cliente.from('push_inscricoes').delete().eq('endpoint', inscricao.endpoint).then(() => undefined, () => undefined);
+  await inscricao.unsubscribe().catch(() => false);
+}

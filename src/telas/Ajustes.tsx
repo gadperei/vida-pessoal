@@ -9,6 +9,7 @@ import {
   criarExcecao, desligarTreino, editarConfig, editarFaculdade, ligarTreino, trocarEscala, type TipoExcecao,
 } from '../dados/opsConfig.ts';
 import { apagarLocal } from '../dados/persistencia.ts';
+import { desativarPush } from '../pwa/push.ts';
 import { useBanco } from '../estado/contexto.tsx';
 import { esquecerUsuario } from '../estado/useSessao.ts';
 import { chaveConclusao, type Ocorrencia } from '../regras/agenda.ts';
@@ -239,6 +240,7 @@ function SecaoConta() {
 
   async function sair() {
     setSaindo(true);
+    await desativarPush(cliente);
     await cliente.auth.signOut({ scope: 'local' }).catch(() => { /* sem internet: a sessão local some mesmo assim */ });
     await apagarLocal(userId);
     esquecerUsuario();

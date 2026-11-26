@@ -16,38 +16,38 @@ const chaves = (a: Aviso[]) => a.map((x) => [x.chave, x.texto]);
 it('às 08:00 de 16/11', () => {
   expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 480 }, base(), new Set()))).toEqual([
     ['checkin:2026-11-16', 'Como foi ontem? Registre em 10 segundos.'],
-    ['item:e1:1d', 'Entrega relatório amanhã'],
-    ['meta:m1:30d', 'Meta "Vender um projeto": faltam 30 dias'],
+    ['item:e1:2026-11-17:1d', 'Entrega relatório amanhã'],
+    ['meta:m1:2026-12-16:30d', 'Meta "Vender um projeto": faltam 30 dias'],
   ]);
 });
 it('não repete o que já foi enviado e respeita o horário', () => {
-  const env = new Set(['checkin:2026-11-16', 'item:e1:1d', 'meta:m1:30d']);
-  expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 780 }, base(), env))).toEqual([['item:c1:1h', 'Dentista às 14:00']]);
+  const env = new Set(['checkin:2026-11-16', 'item:e1:2026-11-17:1d', 'meta:m1:2026-12-16:30d']);
+  expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 780 }, base(), env))).toEqual([['item:c1:2026-11-16T14:00:1h', 'Dentista às 14:00']]);
   expect(avisosDevidos({ dia: '2026-11-16', minutos: 479 }, base(), new Set())).toEqual([]);
 });
 it('aviso de ontem não sai hoje; feito para de avisar', () => {
   const b = base();
   b.dias = [dia('2026-11-16', { habitos_em: AGORA })];
   expect(chaves(avisosDevidos({ dia: '2026-11-17', minutos: 480 }, b, new Set()))).toEqual([
-    ['item:e1:0d', 'Hoje: Entrega relatório'],
-    ['item:p1:3d', 'Prova química em 3 dias'],
+    ['item:e1:2026-11-17:0d', 'Hoje: Entrega relatório'],
+    ['item:p1:2026-11-20:3d', 'Prova química em 3 dias'],
   ]);
   b.itens = b.itens.map((i) => (i.id === 'e1' ? { ...i, feito_em: AGORA } : i));
-  expect(chaves(avisosDevidos({ dia: '2026-11-17', minutos: 480 }, b, new Set()))).toEqual([['item:p1:3d', 'Prova química em 3 dias']]);
+  expect(chaves(avisosDevidos({ dia: '2026-11-17', minutos: 480 }, b, new Set()))).toEqual([['item:p1:2026-11-20:3d', 'Prova química em 3 dias']]);
 });
 it('22h30 em São Paulo ainda é o mesmo dia', () => {
   const b = banco({ itens: [item({ id: 'c2', tipo: 'compromisso', titulo: 'Plantão', data: '2026-11-16', hora: '23:30' })], dias: [dia('2026-11-15', { habitos_em: AGORA })] });
-  expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 1350 }, b, new Set()))).toEqual([['item:c2:1h', 'Plantão às 23:30']]);
+  expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 1350 }, b, new Set()))).toEqual([['item:c2:2026-11-16T23:30:1h', 'Plantão às 23:30']]);
 });
 it('compromisso à 00:30 avisa à meia-noite; desligado não avisa', () => {
   const b = banco({ itens: [item({ id: 'c3', tipo: 'compromisso', titulo: 'X', data: '2026-11-16', hora: '00:30' })], dias: [dia('2026-11-15', { habitos_em: AGORA })] });
-  expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 0 }, b, new Set()))).toEqual([['item:c3:1h', 'X às 00:30']]);
+  expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 0 }, b, new Set()))).toEqual([['item:c3:2026-11-16T00:30:1h', 'X às 00:30']]);
   b.config = [config({ notificacoes_ligadas: false })];
   expect(avisosDevidos({ dia: '2026-11-16', minutos: 900 }, b, new Set())).toEqual([]);
 });
 it('compromisso sem hora: 1 dia antes e no dia', () => {
   const b = banco({ itens: [item({ id: 'c4', tipo: 'compromisso', titulo: 'Banco', data: '2026-11-17' })], dias: [dia('2026-11-15', { habitos_em: AGORA })] });
-  expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 480 }, b, new Set()))).toEqual([['item:c4:1d', 'Banco amanhã']]);
+  expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 480 }, b, new Set()))).toEqual([['item:c4:2026-11-17:1d', 'Banco amanhã']]);
 });
 it('monta a notificação', () => {
   const a = avisosDevidos({ dia: '2026-11-16', minutos: 480 }, base(), new Set());
@@ -56,4 +56,16 @@ it('monta a notificação', () => {
   expect(montarNotificacao([a[2]])?.url).toBe('/?aba=metas');
   expect(montarNotificacao(a)?.url).toBe('/');
   expect(montarNotificacao(a)?.corpo).toBe('Como foi ontem? Registre em 10 segundos. · Entrega relatório amanhã · Meta "Vender um projeto": faltam 30 dias');
+});
+it('entrega adiada avisa de novo (a chave leva a data)', () => {
+  const b = base();
+  b.dias = [dia('2026-11-16', { habitos_em: AGORA })];
+  b.itens = b.itens.map((i) => (i.id === 'e1' ? { ...i, data: '2026-11-18' } : i));
+  const jaEnviadas = new Set(['item:e1:2026-11-17:1d']);
+  expect(chaves(avisosDevidos({ dia: '2026-11-17', minutos: 480 }, b, jaEnviadas))).toContainEqual(['item:e1:2026-11-18:1d', 'Entrega relatório amanhã']);
+});
+it('compromisso que mudou de hora avisa de novo', () => {
+  const b = banco({ itens: [item({ id: 'c5', tipo: 'compromisso', titulo: 'Reunião', data: '2026-11-16', hora: '16:00' })], dias: [dia('2026-11-15', { habitos_em: AGORA })] });
+  const jaEnviadas = new Set(['item:c5:2026-11-16T14:00:1h']);
+  expect(chaves(avisosDevidos({ dia: '2026-11-16', minutos: 900 }, b, jaEnviadas))).toEqual([['item:c5:2026-11-16T16:00:1h', 'Reunião às 16:00']]);
 });

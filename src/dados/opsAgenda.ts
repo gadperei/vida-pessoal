@@ -49,7 +49,9 @@ export function editarItem(
   item: Item, campos: Partial<Pick<Item, 'titulo' | 'tipo' | 'data' | 'hora' | 'area'>>, agora: string,
 ): Mudanca {
   const novo: Item = { ...item, ...campos, atualizado_em: agora };
-  if (novo.tipo !== 'tarefa') novo.repeticao = 'nenhuma';
+  // Item repetido é sempre tarefa: trocar o tipo apagaria a repetição de todos os dias, inclusive do histórico.
+  if (item.repeticao !== 'nenhuma') novo.tipo = 'tarefa';
+  else if (novo.tipo !== 'tarefa') novo.repeticao = 'nenhuma';
   return { tabela: 'itens', linha: novo };
 }
 

@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { banco, item } from '../testes/fabrica.ts';
 import type { Linha, Tabela } from '../regras/tipos.ts';
-import { sincronizar, type EstadoLocal, type Remoto } from './sincronizador.ts';
+import { precisaOutraRodada, sincronizar, type EstadoLocal, type Remoto } from './sincronizador.ts';
 
 type Resposta = 'ok' | 'rede' | 'recusado';
 function remotoFalso(respostas: Record<string, Resposta>, busca: Partial<Record<Tabela, Linha[]>> = {}) {
@@ -52,4 +52,11 @@ it('cai a rede durante a busca: devolve offline e mantém os cursores', async ()
   const r = await sincronizar(estado([], { itens: 'c0' }), remoto);
   expect(r.offline).toBe(true);
   expect(r.estado.cursores).toEqual({ itens: 'c0' });
+});
+
+it('sobrou coisa na fila depois de uma rodada com internet: precisa de outra rodada', () => {
+  const m = { tabela: 'itens' as const, linha: item({ id: 'x' }) };
+  expect(precisaOutraRodada(false, [m])).toBe(true);
+  expect(precisaOutraRodada(false, [])).toBe(false);
+  expect(precisaOutraRodada(true, [m])).toBe(false);
 });

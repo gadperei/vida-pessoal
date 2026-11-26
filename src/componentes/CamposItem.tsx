@@ -30,12 +30,12 @@ function Chips<T extends string>({ rotulo, opcoes, valor, aoMudar }: {
 }
 
 /** Tipo, data, hora, área e repetição de um item (a repetição só aparece para tarefa). */
-export function CamposItem({ valores, aoMudar, mostrarRepeticao = true }: {
-  valores: ValoresItem; aoMudar(v: Partial<ValoresItem>): void; mostrarRepeticao?: boolean;
+export function CamposItem({ valores, aoMudar, mostrarRepeticao = true, mostrarTipo = true }: {
+  valores: ValoresItem; aoMudar(v: Partial<ValoresItem>): void; mostrarRepeticao?: boolean; mostrarTipo?: boolean;
 }) {
   return (
     <>
-      <Chips rotulo="Tipo" opcoes={TIPOS} valor={valores.tipo} aoMudar={(tipo) => aoMudar({ tipo })} />
+      {mostrarTipo && <Chips rotulo="Tipo" opcoes={TIPOS} valor={valores.tipo} aoMudar={(tipo) => aoMudar({ tipo })} />}
       <div className="campos-lado">
         <div className="campo">
           <label htmlFor="item-data">Data</label>

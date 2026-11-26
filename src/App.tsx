@@ -20,6 +20,7 @@ import type { Dia, Meta } from './regras/tipos.ts';
 import { AvisoAtualizacao } from './pwa/AvisoAtualizacao.tsx';
 import { ativarPush, situacaoPush } from './pwa/push.ts';
 import { lerPedidoDaUrl } from './estado/pedidoUrl.ts';
+import { telaInicial } from './estado/telaInicial.ts';
 import { cliente } from './supabase.ts';
 import type { Ocorrencia } from './regras/agenda.ts';
 
@@ -45,7 +46,7 @@ function Conteudo() {
 }
 
 function Principal() {
-  const { banco, pronto, aviso, limparAviso, status } = useBanco();
+  const { banco, pronto, aviso, limparAviso, status, baixouDoServidor, sincronizarAgora } = useBanco();
   // A notificação abre "/?aba=metas" ou "/?abrir=checkin".
   const [pedido] = useState(() => lerPedidoDaUrl(window.location.search));
   const [aba, setAba] = useState<Aba>(pedido.aba ?? 'inicio');
@@ -70,7 +71,19 @@ function Principal() {
   }, [status.online]);
 
   if (!pronto) return <div className="tela-neutra">Carregando…</div>;
-  if (banco.config.length === 0) {
+  const tela = telaInicial({ temConfig: banco.config.length > 0, baixouDoServidor });
+  if (tela === 'aguardar') {
+    return (
+      <>
+        <IndicadorSync />
+        <div className="tela-neutra aguardar-dados">
+          <p>{status.sincronizando ? 'Baixando seus dados…' : 'Não deu para baixar seus dados. Confira a internet.'}</p>
+          {!status.sincronizando && <button type="button" className="botao botao-primario" onClick={sincronizarAgora}>Tentar de novo</button>}
+        </div>
+      </>
+    );
+  }
+  if (tela === 'configurar') {
     return (
       <>
         <IndicadorSync />

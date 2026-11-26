@@ -3,7 +3,7 @@ import { aplicar, semExcluidos, type Mudanca } from '../dados/banco.ts';
 import { enfileirar } from '../dados/fila.ts';
 import { carregarLocal, salvarLocal } from '../dados/persistencia.ts';
 import { criarRemoto } from '../dados/remoto.ts';
-import { sincronizar, type EstadoLocal } from '../dados/sincronizador.ts';
+import { precisaOutraRodada, sincronizar, type EstadoLocal } from '../dados/sincronizador.ts';
 import { bancoVazio, type Banco } from '../regras/tipos.ts';
 import { cliente } from '../supabase.ts';
 import { useOnline } from './useOnline.ts';
@@ -18,6 +18,9 @@ export interface ValorBanco {
   userId: string;
   /** Dados locais carregados e a primeira sincronização tentada (ou sem internet). */
   pronto: boolean;
+  /** Alguma sincronização completa (envio + busca) já deu certo desde que o app abriu. */
+  baixouDoServidor: boolean;
+  sincronizarAgora(): void;
   aviso: string | null;
   avisar(mensagem: string): void;
   limparAviso(): void;
@@ -38,6 +41,7 @@ export function BancoProvider({ userId, children }: { userId: string; children: 
   const [estado, setEstado] = useState<EstadoLocal>(vazio);
   const [carregado, setCarregado] = useState(false);
   const [sincronizouUmaVez, setSincronizouUmaVez] = useState(false);
+  const [baixouDoServidor, setBaixouDoServidor] = useState(false);
   const [sincronizando, setSincronizando] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
 
@@ -58,6 +62,7 @@ export function BancoProvider({ userId, children }: { userId: string; children: 
     if (emAndamento.current || !carregadoRef.current) return;
     emAndamento.current = true;
     setSincronizando(true);
+    let deNovo = false;
     try {
       const r = await sincronizar(atual.current, remoto);
       // Alterações feitas enquanto sincronizava: reaplicar por cima do resultado.
@@ -65,6 +70,8 @@ export function BancoProvider({ userId, children }: { userId: string; children: 
       for (const m of duranteSync.current) e = { ...e, banco: aplicar(e.banco, m), fila: enfileirar(e.fila, m) };
       duranteSync.current = [];
       gravar(e);
+      if (!r.offline) setBaixouDoServidor(true);
+      deNovo = precisaOutraRodada(r.offline, e.fila);
       if (r.rejeitadas.length > 0) {
         setAviso(r.rejeitadas.length === 1 ? 'Uma alteração não pôde ser salva.' : `${r.rejeitadas.length} alterações não puderam ser salvas.`);
       }
@@ -73,7 +80,11 @@ export function BancoProvider({ userId, children }: { userId: string; children: 
       setSincronizando(false);
       setSincronizouUmaVez(true);
     }
+    // Algo foi salvo enquanto esta rodada acontecia: manda já, sem esperar o próximo gatilho.
+    if (deNovo) void sincronizarAgoraRef.current();
   }, [remoto, gravar]);
+  const sincronizarAgoraRef = useRef(sincronizarAgora);
+  sincronizarAgoraRef.current = sincronizarAgora;
 
   // Abrir: dados do aparelho primeiro, depois o servidor.
   useEffect(() => {
@@ -121,6 +132,8 @@ export function BancoProvider({ userId, children }: { userId: string; children: 
     status: { pendentes: estado.fila.length, online, sincronizando },
     userId,
     pronto: carregado && (sincronizouUmaVez || !online || estado.banco.config.length > 0),
+    baixouDoServidor,
+    sincronizarAgora: () => { void sincronizarAgora(); },
     aviso,
     avisar: setAviso,
     limparAviso,

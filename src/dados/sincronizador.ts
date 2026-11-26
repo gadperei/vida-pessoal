@@ -40,3 +40,8 @@ export async function sincronizar(
   }
   return { estado: { banco: mesclar(e.banco, remotos, fila), fila, cursores }, rejeitadas, offline: false };
 }
+
+/** Algo entrou na fila durante a rodada (e havia internet): precisa enviar de novo, sem esperar o próximo gatilho. */
+export function precisaOutraRodada(offline: boolean, fila: Mudanca[]): boolean {
+  return !offline && fila.length > 0;
+}

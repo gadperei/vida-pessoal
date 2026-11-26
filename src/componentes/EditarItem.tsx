@@ -63,7 +63,7 @@ export function EditarItem({ ocorrencia, hoje, aoFechar }: Props) {
         <label htmlFor="editar-titulo">Título</label>
         <input id="editar-titulo" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
       </div>
-      <CamposItem valores={repetido ? { ...valores, data: item.data } : valores} aoMudar={(v) => setValores((a) => (a ? { ...a, ...v } : a))} />
+      <CamposItem mostrarTipo={!repetido} valores={repetido ? { ...valores, data: item.data } : valores} aoMudar={(v) => setValores((a) => (a ? { ...a, ...v } : a))} />
       {repetido && <p className="campo-dica">Item repetido: a mudança de repetição vale de hoje em diante.</p>}
 
       <div className="botoes">

@@ -30,13 +30,13 @@ function candidatos(agora: { dia: Dia }, banco: Banco, H: number): Candidato[] {
     const ns = comHora ? [1] : ANTECEDENCIA[it.tipo];
     for (const n of ns) {
       lista.push({
-        dia: adicionarDias(it.data, -n), minuto: H, chave: `item:${it.id}:${n}d`,
+        dia: adicionarDias(it.data, -n), minuto: H, chave: `item:${it.id}:${it.data}:${n}d`,
         texto: textoDias(it.titulo, n), abrir: 'inicio', diasRestantes: n,
       });
     }
     if (comHora) {
       lista.push({
-        dia: it.data, minuto: Math.max(0, minutosDeHora(it.hora as string) - 60), chave: `item:${it.id}:1h`,
+        dia: it.data, minuto: Math.max(0, minutosDeHora(it.hora as string) - 60), chave: `item:${it.id}:${it.data}T${it.hora}:1h`,
         texto: `${it.titulo} às ${it.hora}`, abrir: 'inicio', diasRestantes: 0,
       });
     }
@@ -46,7 +46,7 @@ function candidatos(agora: { dia: Dia }, banco: Banco, H: number): Candidato[] {
     if (m.prioridade !== 'alta' || m.concluida_em !== null) continue;
     for (const n of [30, 7]) {
       lista.push({
-        dia: adicionarDias(m.prazo, -n), minuto: H, chave: `meta:${m.id}:${n}d`,
+        dia: adicionarDias(m.prazo, -n), minuto: H, chave: `meta:${m.id}:${m.prazo}:${n}d`,
         texto: `Meta "${m.nome}": faltam ${n} dias`, abrir: 'metas', diasRestantes: n,
       });
     }
